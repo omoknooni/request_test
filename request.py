@@ -5,6 +5,7 @@ import json
 
 # custom module
 import initial
+from scrapping import *
 
 url, word_list, max_depth, timeout, check_set, alive_ports = initial.settings()
 dead_port = list()
@@ -35,38 +36,20 @@ def dfs(now, check_set, depth):
         try:
             r = req.get(now, timeout=1)
             if r.status_code == 200:
-                # print("status (", r.status_code, ")", now)
                 check_set[now] = depth
                 soup = BeautifulSoup(r.text, "html.parser")
-                a_links = soup.find_all("a")
-                for anchor in a_links:
-                    href = anchor.attrs["href"]
-                    if href == "#" or href == "/" or href.startswith("?"):
-                        continue
-                    elif href.startswith("https://"):
-                        true_anchor = href
-                    elif href != "/":
-                        true_anchor = (
-                            now + href[1:] if href.startswith("/") else now + href
-                        )
+
+                true_anchors = a_scrapping(soup.find_all("a"), now)
+                for true_anchor in true_anchors:
                     dfs(true_anchor, check_set, depth + 1)
-                tr_links = soup.find_all("tr")
-                for anchor in tr_links:
-                    if anchor.attrs.get("onclick"):
-                        href = anchor.attrs["onclick"][15:]
-                        true_anchor = now + href
-                        dfs(true_anchor, check_set, depth + 1)
-                td_links = soup.find_all("td")
-                for anchor in td_links:
-                    temp = anchor.find_all("a")
-                    for item in temp:
-                        href = (
-                            item.attrs["href"]
-                            if item.attrs["href"] != "/"
-                            else item.attrs["href"][1:]
-                        )
-                        true_anchor = now + href
-                        dfs(true_anchor, check_set, depth + 1)
+
+                true_anchors = tr_scrapping(soup.find_all("tr"), now)
+                for true_anchor in true_anchors:
+                    dfs(true_anchor, check_set, depth + 1)
+
+                true_anchors = td_scrapping(soup.find_all("td"), now)
+                for true_anchor in true_anchors:
+                    dfs(true_anchor, check_set, depth + 1)
                 li_links = soup.find_all("li")
             else:
                 return
@@ -86,54 +69,29 @@ def inspect(url, alive_ports, word_list):
                 if r.status_code == 200:
                     check_set[target_url] = 0
                     soup = BeautifulSoup(r.text, "html.parser")
-                    a_links = soup.find_all("a")
-                    for anchor in a_links:
-                        href = anchor.attrs["href"]
-                        if href == "#" or href == "/" or href.startswith("?"):
-                            continue
-                        if href.startswith("http://") or href.startswith("https://"):
-                            true_anchor = href
-                        elif href != "/":
-                            true_anchor = (
-                                target_url + href[1:]
-                                if href.startswith("/")
-                                else target_url + href
-                            )
-                        check_set[true_anchor] = 0
-                    tr_links = soup.find_all("tr")
-                    for anchor in tr_links:
-                        if anchor.attrs.get("onclick"):
-                            href = anchor.attrs["onclick"][15:]
-                            true_anchor = target_url + href
-                            check_set[true_anchor] = 0
-                    td_links = soup.find_all("td")
-                    for anchor in td_links:
-                        temp = anchor.find_all("a")
-                        for item in temp:
-                            href = (
-                                item.attrs["href"]
-                                if item.attrs["href"] != "/"
-                                else item.attrs["href"][1:]
-                            )
-                            true_anchor = target_url + href
-                            check_set[true_anchor] = 0
+                    true_anchors = a_scrapping(soup.find_all("a"), target_url)
+                    check(true_anchors, check_set)
+
+                    true_anchors = tr_scrapping(soup.find_all("tr"), target_url)
+                    check(true_anchors, check_set)
+
+                    true_anchors = td_scrapping(soup.find_all("td"), target_url)
+                    check(true_anchors, check_set)
+
                     li_links = soup.find_all("li")
             except Exception as e:
                 continue
 
 
 print("<< Initial Scan >>")
-inspect(
-    url="192.168.0.78",
-    alive_ports=[80, 400],
-    word_list=word_list,
-)
+inspect(url, alive_ports, word_list)
 print("<< Done. Searched ", len(check_set), " Item(s) >>")
-# dfs("http://192.168.0.78", check_set, 0)
-
-json1 = json.dumps(check_set, indent=4)
 
 initial_set = dict(check_set)
+for key in initial_set:
+    print("key : ", key)
+
+
 print("<< Searching Directory (Brute) >>")
 for key in initial_set:
     dfs(key, check_set, 0)
@@ -141,3 +99,6 @@ for key in initial_set:
 print("<< Done. Searched ", len(check_set), " Item(s) >>")
 for key in check_set:
     print("Has Link : ", key)
+
+
+# json1 = json.dumps(check_set, indent=4)

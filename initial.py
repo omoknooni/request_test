@@ -2,7 +2,7 @@ def settings(
     mode="default", url="", word_list="", max_depth="", timeout="", alive_ports=""
 ):
     if mode == "default":
-        url = "http://192.168.0.182"
+        url = "http://192.168.0.78"
         word_list = [
             "",
             "src/",

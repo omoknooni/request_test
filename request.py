@@ -27,7 +27,6 @@ def port_scan(url, alive_ports, dead_ports):
 
 
 def dfs(now, check_set, depth):
-    # now = now + "/" if not now.endswith("/") else now
     if depth >= max_depth or (
         check_set.get(now) != None and int(check_set.get(now) >= max_depth)
     ):

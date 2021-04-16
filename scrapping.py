@@ -45,10 +45,18 @@ def td_scrapping(td_links, target_url):
     return true_anchors
 
 
-def check(anchors, check_set):
-    for anchor in anchors:
-        if check_set.get(anchor) == None:
-            check_set[anchor] = 0
+def li_scrapping(li_links, target_url):
+    true_anchors = list()
+    for anchor in li_links:
+        temp = anchor.find_all("a")
+        for item in temp:
+            href = item.attrs["href"]
+            if href.startswith("/"):
+                href = href[1:]
+            true_anchor = target_url + href
+            true_anchors.append(true_anchor)
+
+    return true_anchors
 
 
 """ 

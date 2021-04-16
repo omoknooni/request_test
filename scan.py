@@ -4,13 +4,10 @@ from bs4 import BeautifulSoup
 
 
 # Custom Module
-import initial
 from scrapping import *
-from report import initial_report, final_report
 
-url, word_list, max_depth, timeout, url_set, alive_ports = initial.settings()
-dead_port = list()
-# Searching for Ports
+# temporary Module -> only for testing
+import time
 
 
 def url_setter(anchors, url_set):
@@ -18,20 +15,12 @@ def url_setter(anchors, url_set):
         url_set[anchor] = 0
 
 
-def port_scan(url, alive_ports, dead_ports):
-    for port in range(10, 8080, 10):
-        target_url = url + ":" + f"{port}"
-        print(target_url)
-        if len(alive_ports) >= 2:
-            break
-        try:
-            print("ALIVE : ", port)
-            alive_ports.append(port)
-        except Exception:
-            dead_ports.append(port)
-
-
-def dfs_scan(now, check_set, depth):
+def dfs_scan(
+    now,
+    check_set,
+    depth,
+    max_depth,
+):
     if depth >= max_depth or (
         check_set.get(now) != None and int(check_set.get(now) >= max_depth)
     ):
@@ -40,24 +29,34 @@ def dfs_scan(now, check_set, depth):
         try:
             r = req.get(now, timeout=1)
             if r.status_code == 200:
+                print(f"[{depth}] : {now}")
                 check_set[now] = depth
 
                 soup = BeautifulSoup(r.text, "html.parser")
 
                 true_anchors = a_scrapping(soup.find_all("a"), now)
+                print("a_scrapping")
+                time.sleep(0.05)
                 for true_anchor in true_anchors:
-                    dfs_scan(true_anchor, check_set, depth + 1)
+                    dfs_scan(true_anchor, check_set, depth + 1, max_depth)
 
+                print("tr_scrapping")
+                time.sleep(0.05)
                 true_anchors = tr_scrapping(soup.find_all("tr"), now)
                 for true_anchor in true_anchors:
-                    dfs_scan(true_anchor, check_set, depth + 1)
+                    dfs_scan(true_anchor, check_set, depth + 1, max_depth)
 
+                print("td_scrapping")
+                time.sleep(0.05)
                 true_anchors = td_scrapping(soup.find_all("td"), now)
                 for true_anchor in true_anchors:
-                    dfs_scan(true_anchor, check_set, depth + 1)
+                    dfs_scan(true_anchor, check_set, depth + 1, max_depth)
+
+                print("li_scrapping")
+                time.sleep(0.05)
                 true_anchors = li_scrapping(soup.find_all("li"), now)
                 for true_anchor in true_anchors:
-                    dfs_scan(true_anchor, check_set, depth + 1)
+                    dfs_scan(true_anchor, check_set, depth + 1, max_depth)
 
             else:
                 return
@@ -65,9 +64,7 @@ def dfs_scan(now, check_set, depth):
             return
 
 
-def initial_scan(url, alive_ports, word_list):
-    initial_set = dict()
-
+def initial_scan(url, alive_ports, word_list, url_set, timeout):
     if not url.startswith("http://"):
         url = "http://" + url
     for port in alive_ports:
@@ -93,24 +90,26 @@ def initial_scan(url, alive_ports, word_list):
                     url_setter(true_anchors, url_set)
             except Exception:
                 continue
-    return initial_set
 
 
-print("<< Initial Scan >>")
-initial_set = initial_scan(url, alive_ports, word_list)
-print("<< Done. Searched ", len(url_set), " Item(s) >>")
+def main_scan(conf):
+    # get data from conf
+    url, word_list, max_depth, timeout, url_set, port = conf
+    alive_ports = [
+        port,
+    ]
+    # initial_scan
+    print("<< [2-1] : Initial Scan >>")
+    initial_scan(url, alive_ports, word_list, url_set, timeout)
+    initial_set = dict(url_set)
+    print("<< [2-1] : Done. Searched ", len(url_set), " Item(s) >>")
+    print("<< [2-2] : Searching Directory (Brute) >>")
+    for URL in initial_set:
+        dfs_scan(URL, url_set, 0, max_depth)
+    print(
+        "<< [2-2] : Done. Searched ", len(url_set) - len(initial_set), "new Item(s) >>"
+    )
+    for URL in url_set:
+        print("Has Link : ", URL)
 
-for URL in initial_set:
-    print("URL : ", URL)
-
-
-print("<< Searching Directory (Brute) >>")
-for URL in initial_set:
-    dfs_scan(URL, url_set, 0)
-
-print("<< Done. Searched ", len(url_set), " Item(s) >>")
-for URL in url_set:
-    print("Has Link : ", URL)
-
-initial_report(initial_set)
-final_report(url_set)
+    return initial_set, url_set

@@ -1,5 +1,6 @@
 # Default module
 import requests as req
+from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
 
 
@@ -15,6 +16,12 @@ def url_setter(anchors, url_set):
         url_set[anchor] = 0
 
 
+def get_headers():
+    ca = UserAgent(verify_ssl=False)
+    headers = {"User-Agent": ca.random}
+    return headers
+
+
 def dfs_scan(
     now,
     check_set,
@@ -27,32 +34,33 @@ def dfs_scan(
         return
     else:
         try:
-            r = req.get(now, timeout=1)
+            random_agent = get_headers()
+            r = req.get(now, timeout=0.5, headers=random_agent)
             if r.status_code == 200:
-                print(f"[{depth}] : {now}")
+                # print(f"[{depth}] : {now}")
                 check_set[now] = depth
 
                 soup = BeautifulSoup(r.text, "html.parser")
 
                 true_anchors = a_scrapping(soup.find_all("a"), now)
-                print("a_scrapping")
+                # print("a_scrapping")
                 time.sleep(0.05)
                 for true_anchor in true_anchors:
                     dfs_scan(true_anchor, check_set, depth + 1, max_depth)
 
-                print("tr_scrapping")
+                # print("tr_scrapping")
                 time.sleep(0.05)
                 true_anchors = tr_scrapping(soup.find_all("tr"), now)
                 for true_anchor in true_anchors:
                     dfs_scan(true_anchor, check_set, depth + 1, max_depth)
 
-                print("td_scrapping")
+                # print("td_scrapping")
                 time.sleep(0.05)
                 true_anchors = td_scrapping(soup.find_all("td"), now)
                 for true_anchor in true_anchors:
                     dfs_scan(true_anchor, check_set, depth + 1, max_depth)
 
-                print("li_scrapping")
+                # print("li_scrapping")
                 time.sleep(0.05)
                 true_anchors = li_scrapping(soup.find_all("li"), now)
                 for true_anchor in true_anchors:
@@ -72,7 +80,8 @@ def initial_scan(url, alive_ports, word_list, url_set, timeout):
         for word in word_list:
             try:
                 target_url = start_url + word
-                r = req.get(target_url, timeout=0.5)
+                random_agent = get_headers()
+                r = req.get(target_url, timeout=0.5, headers=random_agent)
                 if r.status_code == 200:
                     url_set[target_url] = 0
                     soup = BeautifulSoup(r.text, "html.parser")
@@ -92,24 +101,26 @@ def initial_scan(url, alive_ports, word_list, url_set, timeout):
                 continue
 
 
-def main_scan(conf):
+def main_scan(conf: list):
     # get data from conf
     url, word_list, max_depth, timeout, url_set, port = conf
     alive_ports = [
         port,
     ]
     # initial_scan
-    print("<< [2-1] : Initial Scan >>")
+    print("<< [3-1] : Initial Scan >>")
     initial_scan(url, alive_ports, word_list, url_set, timeout)
     initial_set = dict(url_set)
-    print("<< [2-1] : Done. Searched ", len(url_set), " Item(s) >>")
-    print("<< [2-2] : Searching Directory (Brute) >>")
+    print("<< [3-1] : Done. Searched ", len(url_set), " Item(s) >>")
+    print("<< [3-2] : Searching Directory (Brute) >>")
     for URL in initial_set:
         dfs_scan(URL, url_set, 0, max_depth)
     print(
-        "<< [2-2] : Done. Searched ", len(url_set) - len(initial_set), "new Item(s) >>"
+        "<< [3-2] : Done. Searched ", len(url_set) - len(initial_set), "new Item(s) >>"
     )
+    """
     for URL in url_set:
         print("Has Link : ", URL)
+    """
 
     return initial_set, url_set

@@ -1,20 +1,39 @@
-import asyncio
-import sqlite3
+import requests
 import time
+from bs4 import BeautifulSoup
 
 
-async def sleep():
-    await asyncio.sleep(1)
-
-
-async def main():
-    # asyncio.sleep은 아무리 많아져도 비동기적으로 잘 돌아간다.
-    futures = [asyncio.ensure_future(sleep()) for i in range(100)]
-    await asyncio.gather(*futures)
+def get_text_from_url(url):
+    print(f"Send request to ... {url}")
+    res = requests.get(url, headers={"user-agent": "Mozilla/5.0"})
+    print(f"Get response from ... {url}")
+    text = BeautifulSoup(res.text, "html.parser").text
+    return text
 
 
 if __name__ == "__main__":
     start = time.time()
-    asyncio.run(main())
+
+    base_url = "https://www.macmillandictionary.com/us/dictionary/american/{keyword}"
+    keywords = [
+        "hi",
+        "apple",
+        "banana",
+        "call",
+        "feel",
+        "hello",
+        "bye",
+        "like",
+        "love",
+        "environmental",
+        "buzz",
+        "ambition",
+        "determine",
+    ]
+
+    urls = [base_url.format(keyword=keyword) for keyword in keywords]
+    for url in urls:
+        text = get_text_from_url(url)
+        print(text[:100].strip())
     end = time.time()
-    print(f"{end-start}")
+    print(f"time taken: {end-start}")

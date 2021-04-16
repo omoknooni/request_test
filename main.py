@@ -47,6 +47,11 @@ if __name__ == "__main__":
     print("[2] : Loading Settings from parsed Arguments")
     conf = get_settings(args)
     print("[2] : Done")
-    
-    initial_result, total_result = main_scan(conf)
+    print("[3] : Start Scanning according to settings")
+    initial_result, final_result = main_scan(conf)
+    print("[3] : Done")
+    print("[4] : Making Reports")
+    initial_report(initial_result)
+    final_report(final_result)
+    print("[4] : All DONE! Check ./reports/ ")
     # make reports

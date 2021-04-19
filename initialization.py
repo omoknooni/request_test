@@ -1,4 +1,4 @@
-def settings(url, mode, port, max_depth, timeout, word_path):
+def init_setting(url, mode, port, max_depth, timeout, word_path):
     # port, max_depth, timeout, word_path
     url = url if url.startswith("http://") else "http://" + url
     word_list = list()

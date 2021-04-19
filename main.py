@@ -1,7 +1,10 @@
+# Python Module
 import argparse
-from initialization import settings
-from scan import main_scan
-from report import make_report
+
+# Custom Module
+import initialization
+import scan
+import report
 
 
 def main():
@@ -28,7 +31,7 @@ def main():
 
 def get_settings(args):
     args.word_path = "./config/" + args.word_path + ".txt"
-    conf = settings(
+    conf = initialization.init_setting(
         url=args.url,
         mode=args.mode,
         port=args.port,
@@ -54,12 +57,12 @@ if __name__ == "__main__":
     print("[2] : Done")
     print("[3] : Start Scanning according to settings")
 
-    initial_result, final_result = main_scan(conf)
+    initial_result, final_result = scan.scan_entry(conf)
 
     print("[3] : Done")
     print("[4] : Making Reports")
 
-    make_report(initial_result, "initial")
-    make_report(final_result, "final")
+    report.make_report(initial_result, "initial")
+    report.make_report(final_result, "final")
     print("[4] : All DONE! Check ./report/ ")
     # make reports

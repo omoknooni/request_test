@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 
 # Custom Module
-from scrapping import *
+import scrapping as scr
 
 # temporary Module -> only for testing
 import time
@@ -40,7 +40,7 @@ def dfs_scan(
 
                 soup = BeautifulSoup(r.text, "html.parser")
 
-                true_anchors = a_scrapping(soup.find_all("a"), now)
+                true_anchors = scr.a_scrapping(soup.find_all("a"), now)
                 # print("a_scrapping")
                 time.sleep(0.05)
                 for true_anchor in true_anchors:
@@ -48,19 +48,19 @@ def dfs_scan(
 
                 # print("tr_scrapping")
                 time.sleep(0.05)
-                true_anchors = tr_scrapping(soup.find_all("tr"), now)
+                true_anchors = scr.tr_scrapping(soup.find_all("tr"), now)
                 for true_anchor in true_anchors:
                     dfs_scan(true_anchor, check_set, depth + 1, max_depth)
 
                 # print("td_scrapping")
                 time.sleep(0.05)
-                true_anchors = td_scrapping(soup.find_all("td"), now)
+                true_anchors = scr.td_scrapping(soup.find_all("td"), now)
                 for true_anchor in true_anchors:
                     dfs_scan(true_anchor, check_set, depth + 1, max_depth)
 
                 # print("li_scrapping")
                 time.sleep(0.05)
-                true_anchors = li_scrapping(soup.find_all("li"), now)
+                true_anchors = scr.li_scrapping(soup.find_all("li"), now)
                 for true_anchor in true_anchors:
                     dfs_scan(true_anchor, check_set, depth + 1, max_depth)
 
@@ -84,22 +84,22 @@ def initial_scan(url, alive_ports, word_list, url_set, timeout):
                     url_set[target_url] = 0
                     soup = BeautifulSoup(r.text, "html.parser")
 
-                    true_anchors = a_scrapping(soup.find_all("a"), target_url)
+                    true_anchors = scr.a_scrapping(soup.find_all("a"), target_url)
                     url_setter(true_anchors, url_set)
 
-                    true_anchors = tr_scrapping(soup.find_all("tr"), target_url)
+                    true_anchors = scr.tr_scrapping(soup.find_all("tr"), target_url)
                     url_setter(true_anchors, url_set)
 
-                    true_anchors = td_scrapping(soup.find_all("td"), target_url)
+                    true_anchors = scr.td_scrapping(soup.find_all("td"), target_url)
                     url_setter(true_anchors, url_set)
 
-                    true_anchors = li_scrapping(soup.find_all("li"), target_url)
+                    true_anchors = scr.li_scrapping(soup.find_all("li"), target_url)
                     url_setter(true_anchors, url_set)
             except Exception:
                 continue
 
 
-def main_scan(conf: list):
+def scan_entry(conf: list):
     # get data from conf
     url, word_list, max_depth, timeout, url_set, port = conf
     alive_ports = [

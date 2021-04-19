@@ -33,13 +33,6 @@ def main() -> list:
         default=True,
     )
     parser.add_argument(
-        "-rt",
-        help="Enable Random request dealy mode",
-        dest="request_delay",
-        required=False,
-        default=True,
-    )
-    parser.add_argument(
         "-report",
         help="A specific Folder to Store JSON reports",
         dest="report_folder",
@@ -99,7 +92,6 @@ def get_settings(args: list) -> list:
         timeout=args.timeout,
         delay=args.delay,
         random_agent=args.random_agent,
-        request_delay=args.request_delay,
         config_folder=args.config_folder,
         report_folder=args.report_folder,
         word_path=args.word_path,
@@ -116,22 +108,33 @@ if __name__ == "__main__":
     args = main()
 
     print("[1] :Done")
-
     print("[2] : Loading Settings from parsed Arguments")
-
-    conf = get_settings(args)
-    print(conf)
-    url = conf[0]
+    (
+        url,
+        port,
+        max_depth,
+        timeout,
+        delay,
+        random_agent,
+        report_folder,
+        word_list,
+        dir_list,
+        fnm_list,
+        ext_list,
+        url_set,
+    ) = get_settings(args)
 
     print("[2] : Done")
     print("[3] : Start Scanning according to settings")
 
-    initial_result, final_result = scan.scan_entry(conf)
+    initial_result, final_result = scan.scan_entry(
+        url, port, max_depth, timeout, delay, random_agent, word_list, url_set
+    )
 
     print("[3] : Done")
     print("[4] : Making Reports")
 
     # make reports
-    report.make_report(initial_result, "initial")
-    report.make_report(final_result, "final")
-    print("[4] : All DONE! Check ./report/ ")
+    report.make_report(initial_result, report_folder, "initial")
+    report.make_report(final_result, report_folder, "final")
+    print("[4] : All DONE! Check ./reports/ ")

@@ -10,9 +10,9 @@ def make_directory(target_path: str) -> None:
     os.makedirs(target_path, exist_ok=True)
 
 
-def make_report(set: dict[T], filename: str) -> None:
+def make_report(set: dict[T], workfolder, filename: str) -> None:
     filename = filename if filename.endswith(".json") else filename + ".json"
-    target_path = "./report"
-    make_directory(target_path)
-    with open(target_path + "/" + filename, "w", encoding="utf-8") as report_json:
+    make_directory(workfolder)
+    with open(os.path.join(workfolder, filename), "w", encoding="utf-8") as report_json:
         json.dump(set, report_json, ensure_ascii=False, indent=4)
+    print("Report Saved : ", os.path.join(workfolder, filename))

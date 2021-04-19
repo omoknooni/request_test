@@ -25,47 +25,84 @@ def get_headers():
     return headers
 
 
+def single_request(
+    url: str, timeout: float, random_agent: bool, delay: float
+) -> object:
+    time.sleep(delay)
+    headers = get_headers() if random_agent else {}
+    response = req.get(url, timeout=timeout, headers=headers)
+    print("request sent to : ", url, f"[{response.status_code}]")
+    return response
+
+
 def dfs_scan(
     now: str,
     check_set: dict[T],
     depth: int,
     max_depth: int,
+    random_agent: bool,
+    timeout: float,
+    delay: float,
 ) -> None:
     if depth >= max_depth or (check_set.get(now) != None):
         return
     else:
         try:
-            random_agent = get_headers()
-            r = req.get(now, timeout=0.5, headers=random_agent)
-            if r.status_code == 200:
+            response = single_request(now, timeout, random_agent, delay)
+            # r = req.get(now, timeout=0.5, headers=random_agent)
+            if response.status_code == 200:
                 # print(f"[{depth}] : {now}")
                 check_set[now] = depth
 
-                soup = BeautifulSoup(r.text, "html.parser")
+                soup = BeautifulSoup(response.text, "html.parser")
 
                 true_anchors = scr.a_scrapping(soup.find_all("a"), now)
-                # print("a_scrapping")
-                time.sleep(0.05)
                 for true_anchor in true_anchors:
-                    dfs_scan(true_anchor, check_set, depth + 1, max_depth)
+                    dfs_scan(
+                        true_anchor,
+                        check_set,
+                        depth + 1,
+                        max_depth,
+                        random_agent,
+                        timeout,
+                        delay,
+                    )
 
-                # print("tr_scrapping")
-                time.sleep(0.05)
                 true_anchors = scr.tr_scrapping(soup.find_all("tr"), now)
                 for true_anchor in true_anchors:
-                    dfs_scan(true_anchor, check_set, depth + 1, max_depth)
+                    dfs_scan(
+                        true_anchor,
+                        check_set,
+                        depth + 1,
+                        max_depth,
+                        random_agent,
+                        timeout,
+                        delay,
+                    )
 
-                # print("td_scrapping")
-                time.sleep(0.05)
                 true_anchors = scr.td_scrapping(soup.find_all("td"), now)
                 for true_anchor in true_anchors:
-                    dfs_scan(true_anchor, check_set, depth + 1, max_depth)
+                    dfs_scan(
+                        true_anchor,
+                        check_set,
+                        depth + 1,
+                        max_depth,
+                        random_agent,
+                        timeout,
+                        delay,
+                    )
 
-                # print("li_scrapping")
-                time.sleep(0.05)
                 true_anchors = scr.li_scrapping(soup.find_all("li"), now)
                 for true_anchor in true_anchors:
-                    dfs_scan(true_anchor, check_set, depth + 1, max_depth)
+                    dfs_scan(
+                        true_anchor,
+                        check_set,
+                        depth + 1,
+                        max_depth,
+                        random_agent,
+                        timeout,
+                        delay,
+                    )
 
             else:
                 return
@@ -78,7 +115,9 @@ def initial_scan(
     alive_ports: list[int],
     word_list: list[str],
     url_set: dict[T],
+    random_agent: bool,
     timeout: float,
+    delay: float,
 ) -> None:
     if not url.startswith("http://"):
         url = "http://" + url
@@ -87,11 +126,12 @@ def initial_scan(
         for word in word_list:
             try:
                 target_url = start_url + word
-                random_agent = get_headers()
-                r = req.get(target_url, timeout=0.5, headers=random_agent)
-                if r.status_code == 200:
+                time.sleep(delay)
+                response = single_request(target_url, timeout, random_agent, delay)
+                # r = req.get(target_url, timeout=0.5, headers=random_agent)
+                if response.status_code == 200:
                     url_set[target_url] = 0
-                    soup = BeautifulSoup(r.text, "html.parser")
+                    soup = BeautifulSoup(response.text, "html.parser")
 
                     true_anchors = scr.a_scrapping(soup.find_all("a"), target_url)
                     url_setter(true_anchors, url_set)
@@ -108,20 +148,27 @@ def initial_scan(
                 continue
 
 
-def scan_entry(conf: list):
-    # get data from conf
-    url, word_list, max_depth, timeout, url_set, port = conf
+def scan_entry(
+    url: str,
+    port: int,
+    max_depth: int,
+    timeout: float,
+    delay: float,
+    random_agent: bool,
+    word_list: list[str],
+    url_set: dict,
+):
     alive_ports = [
         port,
     ]
     # initial_scan
     print("<< [3-1] : Initial Scan >>")
-    initial_scan(url, alive_ports, word_list, url_set, timeout)
+    initial_scan(url, alive_ports, word_list, url_set, random_agent, timeout, delay)
     initial_set = dict(url_set)
     print("<< [3-1] : Done. Searched ", len(url_set), " Item(s) >>")
     print("<< [3-2] : Searching Directory (Brute) >>")
     for URL in initial_set:
-        dfs_scan(URL, url_set, 0, max_depth)
+        dfs_scan(URL, url_set, 0, max_depth, random_agent, timeout, delay)
     print(
         "<< [3-2] : Done. Searched ", len(url_set) - len(initial_set), "new Item(s) >>"
     )

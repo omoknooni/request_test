@@ -6,6 +6,7 @@ import typing
 import initialization
 import scan
 import report
+import dirchecker
 
 
 def main() -> list:
@@ -107,6 +108,7 @@ if __name__ == "__main__":
 
     args = main()
 
+    print(args)
     print("[1] :Done")
     print("[2] : Loading Settings from parsed Arguments")
     (
@@ -138,3 +140,7 @@ if __name__ == "__main__":
     report.make_report(initial_result, report_folder, "initial")
     report.make_report(final_result, report_folder, "final")
     print("[4] : All DONE! Check ./reports/ ")
+
+    print("[5] : Merge Testing")
+    dirchecker.dirchecker_entry(args, dir_list, fnm_list, ext_list)
+    print("[5] : Merge Done")

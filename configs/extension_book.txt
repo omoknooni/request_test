@@ -1,0 +1,6 @@
+.bak
+.css
+.html
+.php
+.jsp
+.txt

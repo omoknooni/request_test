@@ -1,7 +1,7 @@
 import argparse
-from initialization import settings2
+from initialization import settings
 from scan import main_scan
-from report import initial_report, final_report
+from report import make_report
 
 
 def main():
@@ -28,7 +28,7 @@ def main():
 
 def get_settings(args):
     args.word_path = "./config/" + args.word_path + ".txt"
-    conf = settings2(
+    conf = settings(
         url=args.url,
         mode=args.mode,
         port=args.port,
@@ -41,18 +41,25 @@ def get_settings(args):
 
 if __name__ == "__main__":
     print("[1] : Parsing Arguments")
+
     args = main()
+
     print("[1] :Done")
 
     print("[2] : Loading Settings from parsed Arguments")
+
     conf = get_settings(args)
     url = conf[0]
+
     print("[2] : Done")
     print("[3] : Start Scanning according to settings")
+
     initial_result, final_result = main_scan(conf)
+
     print("[3] : Done")
     print("[4] : Making Reports")
-    initial_report(initial_result)
-    final_report(final_result)
-    print("[4] : All DONE! Check ./reports/ ")
+
+    make_report(initial_result, "initial")
+    make_report(final_result, "final")
+    print("[4] : All DONE! Check ./report/ ")
     # make reports

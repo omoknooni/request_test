@@ -28,9 +28,7 @@ def dfs_scan(
     depth,
     max_depth,
 ):
-    if depth >= max_depth or (
-        check_set.get(now) != None and int(check_set.get(now) >= max_depth)
-    ):
+    if depth >= max_depth or (check_set.get(now) != None):
         return
     else:
         try:

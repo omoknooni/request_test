@@ -1,9 +1,10 @@
 # default module
+import typing
 
 from bs4 import BeautifulSoup
 
 
-def a_scrapping(a_links: list, target_url: str):
+def a_scrapping(a_links: list[str], target_url: str) -> list[str]:
     true_anchors = list()
     for anchor in a_links:
         href = anchor.attrs["href"]
@@ -19,7 +20,7 @@ def a_scrapping(a_links: list, target_url: str):
     return true_anchors
 
 
-def tr_scrapping(tr_links: list, target_url: list):
+def tr_scrapping(tr_links: list[str], target_url: list) -> list[str]:
     true_anchors = list()
     for anchor in tr_links:
         if anchor.attrs.get("onclick"):
@@ -30,7 +31,7 @@ def tr_scrapping(tr_links: list, target_url: list):
     return true_anchors
 
 
-def td_scrapping(td_links: list, target_url: str):
+def td_scrapping(td_links: list[str], target_url: str) -> list[str]:
     true_anchors = list()
     for anchor in td_links:
         temp = anchor.find_all("a")
@@ -46,7 +47,7 @@ def td_scrapping(td_links: list, target_url: str):
     return true_anchors
 
 
-def li_scrapping(li_links: list, target_url: str):
+def li_scrapping(li_links: list[str], target_url: str) -> list[str]:
     true_anchors = list()
     for anchor in li_links:
         temp = anchor.find_all("a")

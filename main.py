@@ -46,6 +46,7 @@ if __name__ == "__main__":
 
     print("[2] : Loading Settings from parsed Arguments")
     conf = get_settings(args)
+    url = conf[0]
     print("[2] : Done")
     print("[3] : Start Scanning according to settings")
     initial_result, final_result = main_scan(conf)

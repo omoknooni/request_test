@@ -1,14 +1,1 @@
-{
-    "http://192.168.0.78:80/": 0,
-    "http://192.168.0.78:80/detail.php?id=1'": 0,
-    "http://192.168.0.78:80/detail.php?id=2'": 0,
-    "http://192.168.0.78:80/detail.php?id=3'": 0,
-    "http://192.168.0.78:80/detail.php?id=4'": 0,
-    "http://192.168.0.78:80/detail.php?id=5'": 0,
-    "http://192.168.0.78:80/detail.php?id=6'": 0,
-    "http://192.168.0.78:80/bootstrap/": 0,
-    "http://192.168.0.78:80/bootstrap/config.txt": 0,
-    "http://192.168.0.78:80/bootstrap/css/": 0,
-    "http://192.168.0.78:80/bootstrap/js/": 0,
-    "http://192.168.0.78:80/bootstrap/passwd.bak": 0
-}
+{}

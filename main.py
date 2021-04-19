@@ -1,5 +1,6 @@
 # Python Module
 import argparse
+import typing
 
 # Custom Module
 import initialization
@@ -7,7 +8,7 @@ import scan
 import report
 
 
-def main():
+def main() -> list:
     parser = argparse.ArgumentParser()
     parser.add_argument("url", help="Enter URL or Domain to Inspect")
     parser.add_argument(
@@ -29,7 +30,7 @@ def main():
     return args
 
 
-def get_settings(args):
+def get_settings(args: list) -> list:
     args.word_path = "./config/" + args.word_path + ".txt"
     conf = initialization.init_setting(
         url=args.url,

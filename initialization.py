@@ -1,4 +1,9 @@
-def init_setting(url, mode, port, max_depth, timeout, word_path):
+import typing
+
+
+def init_setting(
+    url: str, mode: str, port: int, max_depth: int, timeout: float, word_path: str
+) -> list:
     # port, max_depth, timeout, word_path
     url = url if url.startswith("http://") else "http://" + url
     word_list = list()

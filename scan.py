@@ -1,4 +1,5 @@
 # Default module
+import typing
 import requests as req
 from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
@@ -10,8 +11,10 @@ import scrapping as scr
 # temporary Module -> only for testing
 import time
 
+T = typing.TypeVar("T")
 
-def url_setter(anchors, url_set):
+
+def url_setter(anchors: list[str], url_set: dict[T]) -> None:
     for anchor in anchors:
         url_set[anchor] = 0
 
@@ -23,11 +26,11 @@ def get_headers():
 
 
 def dfs_scan(
-    now,
-    check_set,
-    depth,
-    max_depth,
-):
+    now: str,
+    check_set: dict[T],
+    depth: int,
+    max_depth: int,
+) -> None:
     if depth >= max_depth or (check_set.get(now) != None):
         return
     else:
@@ -70,7 +73,13 @@ def dfs_scan(
             return
 
 
-def initial_scan(url, alive_ports, word_list, url_set, timeout):
+def initial_scan(
+    url: str,
+    alive_ports: list[int],
+    word_list: list[str],
+    url_set: dict[T],
+    timeout: float,
+) -> None:
     if not url.startswith("http://"):
         url = "http://" + url
     for port in alive_ports:

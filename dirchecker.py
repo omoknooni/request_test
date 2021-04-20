@@ -30,15 +30,6 @@ def dir_crawl(url, d_lists, argz):
     delay = argz.delay
     dirpath = argz.dir_path
 
-    # if dirpath:
-    #     try:
-    #         d_lists = open(dirpath, "r")
-    #     except:
-    #         print("[!] No such file, please check the filename")
-    #         exit()
-    # else:
-    #     d_lists = open("dir_book.txt", "r")
-
     headers = {"User-Agent": "python-dirchecker"}
     if randomAgent == True:
         print("[!] Random-Agent mode ON")
@@ -72,8 +63,6 @@ def dir_crawl(url, d_lists, argz):
             find.append(dirc)
         else:
             print(Fore.BLACK + Back.YELLOW + "[X] 404 NOT FOUND")
-
-    # d_lists.close()
     return find
 
 
@@ -92,15 +81,6 @@ def file_crawl(df, f_lists, ext_lists, url, d_found, dir_res, argz):
         for dirc in dir_res:
             if d not in dirc:
                 continue
-            # if fnmpath:
-            #     try:
-            #         f_lists = open(fnmpath, "r")
-            #     except:
-            #         print("[!] No such file, please check the filename")
-            #         exit()
-            # else:
-            #     f_lists = open("name_book.txt", "r")
-
             for f in f_lists:
                 f = f.replace("\n", "")
                 for ext in ext_lists:
@@ -128,7 +108,6 @@ def file_crawl(df, f_lists, ext_lists, url, d_found, dir_res, argz):
                         find.append(search_url)
                     else:
                         print(Fore.BLACK + Back.YELLOW + "[X] 404 NOT FOUND")
-            # f_lists.close()
         if find:
             df[d].append(find)
     return find
@@ -156,55 +135,6 @@ def deep_dir_scan(url, d_found, d_lists, arg):
     return dir_dict
 
 
-# def read_dir_list(dirpath):
-#     dirs = []
-#     try:
-#         d_lists = open(dirpath, "r")
-#     except Exception as e:
-#         print(e)
-#         print("[!] No such file, please check the filename")
-#         exit()
-
-#     for directory in d_lists:
-#         directory = directory.replace("\n", "")
-#         dirs.append(directory)
-#     d_lists.close()
-#     print(f"[*] Dir : {dirs}")
-#     return dirs
-
-
-# def read_name_list(fnmpath):
-#     names = []
-#     try:
-#         f_lists = open(fnmpath, "r")
-#     except:
-#         print("[!] No such file, please check the filename")
-#         exit()
-
-#     for file_name in f_lists:
-#         file_name = file_name.replace("\n", "")
-#         names.append(file_name)
-#     f_lists.close()
-#     print(f"[*] Name : {names}")
-#     return names
-
-
-# def read_extension(extpath):
-#     exts = []
-#     try:
-#         ext_lists = open(extpath, "r")
-#     except:
-#         print("[!] No such file, please check the filename")
-#         exit()
-
-#     for extension in ext_lists:
-#         extension = extension.replace("\n", "")
-#         exts.append(extension)
-#     ext_lists.close()
-#     print(f"[*] Ext : {exts}")
-#     return exts
-
-
 def dirchecker_entry(arg, dir_list: list, name_list: list, ext_list: list):
     print(arg)
     d_found, f_found, exts = [], [], []
@@ -220,11 +150,6 @@ def dirchecker_entry(arg, dir_list: list, name_list: list, ext_list: list):
     extpath = arg.ext_path
 
     # Read txt files
-    """
-    dir_book = read_dir_list(dirpath)
-    name_book = read_name_list(fnmpath)
-    ext_book = read_extension(extpath)
-    """
     dir_book = dir_list
     name_book = name_list
     ext_book = ext_list

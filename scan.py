@@ -28,7 +28,7 @@ def get_headers():
 def single_request(
     url: str, timeout: float, random_agent: bool, delay: float
 ) -> object:
-    time.sleep(delay)
+    time.sleep(0.05)
     headers = get_headers() if random_agent else {}
     response = req.get(url, timeout=timeout, headers=headers)
     print("request sent to : ", url, f"[{response.status_code}]")
@@ -37,6 +37,7 @@ def single_request(
 
 def dfs_scan(
     now: str,
+    url_set: dict[T],
     check_set: dict[T],
     depth: int,
     max_depth: int,
@@ -44,22 +45,24 @@ def dfs_scan(
     timeout: float,
     delay: float,
 ) -> None:
-    if depth >= max_depth or (check_set.get(now) != None):
+    if (
+        depth >= max_depth
+        or (url_set.get(now) != None and url_set.get(now) >= max_depth - 1)
+        or (check_set.get(now) != None)
+    ):
         return
     else:
         try:
             response = single_request(now, timeout, random_agent, delay)
-            # r = req.get(now, timeout=0.5, headers=random_agent)
             if response.status_code == 200:
-                # print(f"[{depth}] : {now}")
-                check_set[now] = depth
-
+                url_set[now] = depth
                 soup = BeautifulSoup(response.text, "html.parser")
 
                 true_anchors = scr.a_scrapping(soup.find_all("a"), now)
                 for true_anchor in true_anchors:
                     dfs_scan(
                         true_anchor,
+                        url_set,
                         check_set,
                         depth + 1,
                         max_depth,
@@ -72,6 +75,7 @@ def dfs_scan(
                 for true_anchor in true_anchors:
                     dfs_scan(
                         true_anchor,
+                        url_set,
                         check_set,
                         depth + 1,
                         max_depth,
@@ -84,6 +88,7 @@ def dfs_scan(
                 for true_anchor in true_anchors:
                     dfs_scan(
                         true_anchor,
+                        url_set,
                         check_set,
                         depth + 1,
                         max_depth,
@@ -96,6 +101,7 @@ def dfs_scan(
                 for true_anchor in true_anchors:
                     dfs_scan(
                         true_anchor,
+                        url_set,
                         check_set,
                         depth + 1,
                         max_depth,
@@ -105,6 +111,7 @@ def dfs_scan(
                     )
 
             else:
+                check_set[now] = response.status_code
                 return
         except Exception:
             return
@@ -165,16 +172,13 @@ def scan_entry(
     print("<< [3-1] : Initial Scan >>")
     initial_scan(url, alive_ports, word_list, url_set, random_agent, timeout, delay)
     initial_set = dict(url_set)
+    check_set = dict()
     print("<< [3-1] : Done. Searched ", len(url_set), " Item(s) >>")
     print("<< [3-2] : Searching Directory (Brute) >>")
     for URL in initial_set:
-        dfs_scan(URL, url_set, 0, max_depth, random_agent, timeout, delay)
+        dfs_scan(URL, url_set, check_set, 0, max_depth, random_agent, timeout, delay)
     print(
         "<< [3-2] : Done. Searched ", len(url_set) - len(initial_set), "new Item(s) >>"
     )
-    """
-    for URL in url_set:
-        print("Has Link : ", URL)
-    """
 
     return initial_set, url_set

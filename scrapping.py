@@ -1,14 +1,25 @@
 # default module
 import typing
 
+from typing import Callable, AnyStr
 from bs4 import BeautifulSoup
 
 
+def decorator(func: Callable) -> Callable:
+    def decorator(*args):
+        # print(func.__name__)
+        result = func(*args)
+        return result
+
+    return decorator
+
+
+@decorator
 def a_scrapping(a_links: list[str], target_url: str) -> list[str]:
     true_anchors = list()
     for anchor in a_links:
         href = anchor.attrs["href"]
-        if href == "#" or href == "/" or href.startswith("?"):
+        if href.startswith("#") or href == "/" or href.startswith("?"):
             continue
         if href.startswith("http://") or href.startswith("https://"):
             true_anchor = href
@@ -20,6 +31,7 @@ def a_scrapping(a_links: list[str], target_url: str) -> list[str]:
     return true_anchors
 
 
+@decorator
 def tr_scrapping(tr_links: list[str], target_url: list) -> list[str]:
     true_anchors = list()
     for anchor in tr_links:
@@ -31,6 +43,7 @@ def tr_scrapping(tr_links: list[str], target_url: list) -> list[str]:
     return true_anchors
 
 
+@decorator
 def td_scrapping(td_links: list[str], target_url: str) -> list[str]:
     true_anchors = list()
     for anchor in td_links:
@@ -46,6 +59,7 @@ def td_scrapping(td_links: list[str], target_url: str) -> list[str]:
     return true_anchors
 
 
+@decorator
 def li_scrapping(li_links: list[str], target_url: str) -> list[str]:
     true_anchors = list()
     for anchor in li_links:

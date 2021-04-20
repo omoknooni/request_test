@@ -141,6 +141,10 @@ if __name__ == "__main__":
     report.make_report(final_result, report_folder, "final")
     print("[4] : All DONE! Check ./reports/ ")
 
+    """
+
     print("[5] : Merge Testing")
     dirchecker.dirchecker_entry(args, dir_list, fnm_list, ext_list)
     print("[5] : Merge Done")
+
+    """

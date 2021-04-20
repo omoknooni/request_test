@@ -64,11 +64,8 @@ def dir_crawl(url, d_lists, argz):
             print(Fore.BLACK + Back.RED + "[!] Connection Error : ", ce)
             exit()
 
-        # # Put delay
-        # if randomDelay == False:
-        #     time.sleep(delay)
-        # else:
-        #     time.sleep(uniform(1.5, 3))
+        # Put delay
+        time.sleep(round(uniform(delay * 0.5, delay * 1.5)))
 
         if res_code != 404:
             print(Fore.BLUE + Back.GREEN + "[O] Found!")
@@ -123,11 +120,8 @@ def file_crawl(df, f_lists, ext_lists, url, d_found, dir_res, argz):
                         print(Fore.BLACK + Back.RED + "[!] Connection Error : ", ce)
                         exit()
 
-                    # # Put delay
-                    # if randomDelay == False:
-                    #     time.sleep(delay)
-                    # else:
-                    #     time.sleep(uniform(1.5, 3))
+                    # Put delay
+                    time.sleep(round(uniform(delay * 0.5, delay * 1.5)))
 
                     if res_code != 404:
                         print(Fore.BLUE + Back.GREEN + "[O] Found!")
